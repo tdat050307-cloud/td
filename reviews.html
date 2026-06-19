@@ -81,10 +81,6 @@
             >Đăng Nhập</a
           >
         </nav>
-        <span
-          style="color: white; font-size: 12px; font-weight: bold"
-          id="topUserHint"
-        ></span>
       </div>
     </header>
 
@@ -104,8 +100,8 @@
           class="body-text"
           style="color: var(--color-medium-gray); margin-bottom: 25px"
         >
-          Ý kiến của bạn là động lực giúp quán cải thiện chất lượng món ăn và
-          dịch vụ mỗi ngày!
+          Ý kiến của bạn giúp quán cải thiện chất lượng món ăn và dịch vụ mỗi
+          ngày!
         </p>
 
         <div class="review-form">
@@ -158,78 +154,62 @@
     </main>
 
     <script>
+      const DATABASE_URL = "http://localhost:3000/api";
       let selectedRatingScore = 5;
 
-      // Lắng nghe sự kiện click chọn sao đánh giá
+      // Xử lý chọn sao
       const stars = document.querySelectorAll(".rating-star");
       stars.forEach((star) => {
         star.addEventListener("click", () => {
           selectedRatingScore = parseInt(star.getAttribute("data-value"));
           stars.forEach((s) => {
             const val = parseInt(s.getAttribute("data-value"));
-            if (val <= selectedRatingScore) {
-              s.classList.add("selected");
-            } else {
-              s.classList.remove("selected");
-            }
+            if (val <= selectedRatingScore) s.classList.add("selected");
+            else s.classList.remove("selected");
           });
         });
       });
 
-      // Tải và hiển thị các bình luận ra giao diện
+      // LẤY CMT TỪ FILE THẬT RA GIAO DIỆN
       function loadAndDisplayReviews() {
         const container = document.getElementById("reviewsContainerList");
         if (!container) return;
-        container.innerHTML = "";
 
-        // Khởi tạo một số đánh giá mẫu nếu chưa có dữ liệu trong máy
-        let reviewsData = JSON.parse(localStorage.getItem("user_reviews_data"));
-        if (!reviewsData) {
-          reviewsData = [
-            {
-              name: "Nguyễn Văn Hùng",
-              score: 5,
-              content:
-                "Bánh tráng trộn siêu nhiều tóp mỡ, giao tới chân gà còn mát lạnh ngâm sả tắc rất thấm vị. Sẽ ủng hộ tiếp!",
-              date: "18/06/2026 19:15",
-            },
-            {
-              name: "Linh Đan",
-              score: 4,
-              content:
-                "Trà thạch vải hạt chia uống thanh mát giải nhiệt tốt, nem chua rán hơi nguội tí do ship xa nhưng vẫn giòn.",
-              date: "19/06/2026 12:40",
-            },
-          ];
-          localStorage.setItem(
-            "user_reviews_data",
-            JSON.stringify(reviewsData),
-          );
-        }
+        fetch(`${DATABASE_URL}/data`)
+          .then((res) => res.json())
+          .then((db) => {
+            container.innerHTML = "";
+            if (db.reviews.length === 0) {
+              container.innerHTML = `<p style="color:gray;text-align:center;">Chưa có bình luận nào trên máy chủ.</p>`;
+              return;
+            }
 
-        // Đổ ngược danh sách để đánh giá mới nhất lên đầu
-        reviewsData
-          .slice()
-          .reverse()
-          .forEach((r) => {
-            let starStr = "★".repeat(r.score) + "☆".repeat(5 - r.score);
-            container.innerHTML += `
-          <div class="review-item-card">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <strong style="font-size:15px; color:var(--color-dark-charcoal);">${r.name}</strong>
-              <span class="stars-display">${starStr}</span>
-            </div>
-            <p class="body-text" style="margin-top: 8px; font-size:14px;">${r.content}</p>
-            <div class="review-meta">
-              <span>Đã kiểm chứng mua hàng</span>
-              <span>${r.date}</span>
-            </div>
-          </div>
-        `;
+            db.reviews
+              .slice()
+              .reverse()
+              .forEach((r) => {
+                let starStr = "★".repeat(r.score) + "☆".repeat(5 - r.score);
+                container.innerHTML += `
+              <div class="review-item-card">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <strong style="font-size:15px;">${r.username}</strong>
+                  <span class="stars-display">${starStr}</span>
+                </div>
+                <p class="body-text" style="margin-top: 8px; font-size:14px;">${r.content}</p>
+                <div class="review-meta">
+                  <span>Đã lưu vào hệ thống tệp tin</span>
+                  <span>${r.date}</span>
+                </div>
+              </div>
+            `;
+              });
+          })
+          .catch((err) => {
+            container.innerHTML = `<p style="color:red;text-align:center;">Lỗi: Không kết nối được tới Database Server!</p>`;
           });
       }
 
-      // Gửi đánh giá mới lên hệ thống
+      // GỬI CMT GHI THẲNG VÀO FILE THẬT
       function submitReview() {
         const authorInput = document
           .getElementById("reviewAuthor")
@@ -239,54 +219,45 @@
           .value.trim();
 
         if (!authorInput || !contentInput) {
-          alert(
-            "Vui lòng nhập tên và viết nội dung bình luận cảm nhận của bạn!",
-          );
+          alert("Vui lòng nhập tên và nội dung bình luận!");
           return;
         }
 
-        let reviewsData =
-          JSON.parse(localStorage.getItem("user_reviews_data")) || [];
-
-        // Lấy thời gian hiện tại
-        const now = new Date();
-        const timeStr = `${String(now.getDate()).padStart(2, "0")}/${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-
-        // Thêm bài đánh giá vào mảng
-        reviewsData.push({
-          name: authorInput,
-          score: selectedRatingScore,
-          content: contentInput,
-          date: timeStr,
-        });
-
-        localStorage.setItem("user_reviews_data", JSON.stringify(reviewsData));
-        alert("🎉 Cảm ơn bạn! Đánh giá đã được đăng tải thành công công khai.");
-
-        // Làm sạch khung nhập để sẵn sàng cho lần sau
-        document.getElementById("reviewContent").value = "";
-        loadAndDisplayReviews();
+        fetch(`${DATABASE_URL}/save`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "review",
+            username: authorInput,
+            score: selectedRatingScore,
+            content: contentInput,
+            date: new Date().toLocaleString("vi-VN"),
+          }),
+        })
+          .then((res) => res.json())
+          .then(() => {
+            alert("🎉 Đã lưu bình luận thành công vào file database.json!");
+            document.getElementById("reviewContent").value = "";
+            loadAndDisplayReviews();
+          })
+          .catch((err) => {
+            alert("❌ Gửi thất bại! Lỗi kết nối máy chủ file.");
+          });
       }
 
-      // Chạy các chức năng khi tải xong trang
       document.addEventListener("DOMContentLoaded", () => {
-        // Điền sẵn tên nếu người dùng đã đăng nhập tài khoản trước đó
         const currentUser = JSON.parse(localStorage.getItem("currentUser"));
         if (currentUser) {
           document.getElementById("reviewAuthor").value = currentUser.username;
-          const topUserHint = document.getElementById("topUserHint");
-          if (topUserHint)
-            topUserHint.textContent = `Tài khoản: ${currentUser.username}`;
         }
 
-        // Xử lý nút đăng nhập / đăng xuất trên header trang đánh giá
         const userMenuLink = document.getElementById("userMenuLink");
         if (userMenuLink && currentUser) {
           userMenuLink.textContent = `Hi, ${currentUser.username} (Thoát)`;
           userMenuLink.href = "#";
           userMenuLink.addEventListener("click", (e) => {
             e.preventDefault();
-            if (confirm("Bạn có chắc chắn muốn đăng xuất tài khoản không?")) {
+            if (confirm("Bạn có chắc muốn đăng xuất?")) {
               localStorage.removeItem("currentUser");
               window.location.reload();
             }
