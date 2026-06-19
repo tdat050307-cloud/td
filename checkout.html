@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thanh Toán Đơn Hàng</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      /* CSS riêng bổ sung cho trang thanh toán */
+      .checkout-layout {
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 24px;
+        background: #fff;
+        border: 1px solid var(--color-dark-charcoal);
+      }
+      .checkout-box {
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px dashed var(--color-light-border);
+      }
+      .total-highlight {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--color-burgundy-red);
+        margin-top: 8px;
+      }
+      .payment-methods {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin: 20px 0;
+      }
+      .method-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border: 1px solid var(--color-light-border);
+        padding: 16px;
+        cursor: pointer;
+        font-weight: 700;
+      }
+      .method-item:hover {
+        background-color: var(--color-light-gray);
+      }
+      .method-item input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--color-burgundy-red);
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+      .form-group input {
+        height: 40px;
+        padding: 0 12px;
+        border: 1px solid var(--color-light-border);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="main-nav-bar">
+      <div class="nav-container site-container">
+        <a href="index.html" class="logo-link logo-text">An Vặt</a>
+        <span style="color: white; font-weight: 700">TRANG THANH TOÁN</span>
+      </div>
+    </header>
+
+    <main class="site-container">
+      <div class="checkout-layout">
+        <h2 class="heading-2" style="margin-bottom: 20px">
+          THÔNG TIN ĐƠN HÀNG
+        </h2>
+
+        <div class="checkout-box">
+          <span class="label-text">Tổng số tiền cần thanh toán:</span>
+          <div class="total-highlight" id="checkoutTotalDisplay">0đ</div>
+        </div>
+
+        <div class="checkout-box">
+          <h3 class="heading-3" style="margin-bottom: 12px">
+            Thông Tin Giao Hàng
+          </h3>
+          <div class="form-group">
+            <label class="label-text">Họ và tên *</label>
+            <input
+              type="text"
+              id="cusName"
+              placeholder="Ví dụ: Nguyễn Văn A"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="label-text">Số điện thoại *</label>
+            <input
+              type="tel"
+              id="cusPhone"
+              placeholder="Ví dụ: 0912345xxx"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="label-text">Địa chỉ nhận hàng *</label>
+            <input
+              type="text"
+              id="cusAddress"
+              placeholder="Số nhà, tên đường, xã/phường..."
+              required
+            />
+          </div>
+        </div>
+
+        <div class="checkout-box" style="border: none">
+          <h3 class="heading-3">Chọn Phương Thức Thanh Toán</h3>
+          <div class="payment-methods">
+            <label class="method-item">
+              <input type="radio" name="payment" value="Tiền mặt" checked />
+              <span>💵 Thanh toán tiền mặt khi nhận hàng (COD)</span>
+            </label>
+            <label class="method-item">
+              <input type="radio" name="payment" value="MoMo" />
+              <span>🌸 Ví điện tử MoMo</span>
+            </label>
+            <label class="method-item">
+              <input type="radio" name="payment" value="ZaloPay" />
+              <span>💙 Ví điện tử ZaloPay</span>
+            </label>
+            <label class="method-item">
+              <input type="radio" name="payment" value="VNPAY" />
+              <span>🇻🇳 Cổng thanh toán VNPAY</span>
+            </label>
+          </div>
+        </div>
+
+        <button
+          class="btn-secondary-buy"
+          id="confirmPaymentBtn"
+          style="height: 50px; font-size: 16px"
+        >
+          XÁC NHẬN ĐẶT HÀNG
+        </button>
+        <a
+          href="index.html"
+          style="
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: var(--color-medium-gray);
+            text-decoration: none;
+            font-size: 14px;
+          "
+          >Quay lại mua thêm món</a
+        >
+      </div>
+    </main>
+
+    <script>
+      // Lấy số tiền từ localStorage đã lưu từ trang index
+      const pendingTotal = localStorage.getItem("pendingTotalPrice") || "0đ";
+      document.getElementById("checkoutTotalDisplay").textContent =
+        pendingTotal;
+
+      // Xử lý khi nhấn Xác nhận đặt hàng
+      document
+        .getElementById("confirmPaymentBtn")
+        .addEventListener("click", () => {
+          const name = document.getElementById("cusName").value.trim();
+          const phone = document.getElementById("cusPhone").value.trim();
+          const address = document.getElementById("cusAddress").value.trim();
+          const method = document.querySelector(
+            'input[name="payment"]:checked',
+          ).value;
+
+          if (!name || !phone || !address) {
+            alert("Vui lòng điền đầy đủ thông tin giao hàng nhé bạn ơi!");
+            return;
+          }
+
+          alert(
+            `🎉 ĐẶT HÀNG THÀNH CÔNG!\n\nKhách hàng: ${name}\nSố ĐT: ${phone}\nĐịa chỉ: ${address}\nTổng tiền: ${pendingTotal}\nHình thức: ${method}\n\nĐơn hàng của bạn đang được chuẩn bị và giao ngay!`,
+          );
+
+          // Xoá dữ liệu tiền và quay về trang chủ
+          localStorage.removeItem("pendingTotalPrice");
+          window.location.href = "index.html";
+        });
+    </script>
+  </body>
+</html>
