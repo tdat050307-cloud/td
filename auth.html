@@ -88,7 +88,7 @@
 
         <div id="loginFormBox" class="form-box active">
           <div class="form-group">
-            <label class="label-text">Tên đăng nhập hoặc Email *</label>
+            <label class="label-text">Tên đăng nhập *</label>
             <input
               type="text"
               id="loginUser"
@@ -176,12 +176,12 @@
     </main>
 
     <script>
-      // Hàm chuyển đổi giao diện Đăng Nhập / Đăng Ký
+      const DATABASE_URL = "http://localhost:3000/api";
+
       function switchTab(type) {
         const tabs = document.querySelectorAll(".auth-tab-btn");
         const loginBox = document.getElementById("loginFormBox");
         const registerBox = document.getElementById("registerFormBox");
-
         tabs.forEach((t) => t.classList.remove("active"));
 
         if (type === "login") {
@@ -195,7 +195,7 @@
         }
       }
 
-      // Xử lý logic Đăng Ký tài khoản mới
+      // ĐĂNG KÝ GHI FILE THẬT
       function handleRegister() {
         const username = document.getElementById("regUser").value.trim();
         const email = document.getElementById("regEmail").value.trim();
@@ -211,37 +211,45 @@
           return;
         }
         if (password !== confirmPassword) {
-          alert("Mật khẩu nhập lại không trùng khớp! Vui lòng kiểm tra kỹ.");
+          alert("Mật khẩu nhập lại không trùng khớp!");
           return;
         }
 
-        // Lấy danh sách tài khoản đã có trong bộ nhớ máy
-        let usersList =
-          JSON.parse(localStorage.getItem("web_users_list")) || [];
-
-        // Kiểm tra xem tên đăng nhập này đã có ai dùng chưa
-        const isExist = usersList.some(
-          (user) => user.username.toLowerCase() === username.toLowerCase(),
-        );
-        if (isExist) {
-          alert(
-            "Tên đăng nhập này đã tồn tại trên hệ thống, vui lòng chọn tên khác!",
-          );
-          return;
-        }
-
-        // Lưu tài khoản mới vào cơ sở dữ liệu localStorage
-        usersList.push({ username, email, password });
-        localStorage.setItem("web_users_list", JSON.stringify(usersList));
-
-        alert(
-          "🎉 ĐĂNG KÝ THÀNH CÔNG!\nBây giờ bạn có thể dùng tài khoản này để đăng nhập.",
-        );
-        switchTab("login");
-        document.getElementById("loginUser").value = username;
+        fetch(`${DATABASE_URL}/save`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "register",
+            username: username,
+            email: email,
+            password: password,
+            date: new Date().toLocaleString("vi-VN"),
+          }),
+        })
+          .then(async (res) => {
+            const resData = await res.json();
+            if (!res.ok) {
+              if (resData.status === "exists") {
+                alert("❌ Tên đăng nhập này đã tồn tại trên hệ thống!");
+              } else {
+                alert("❌ Lỗi hệ thống: " + resData.message);
+              }
+              return;
+            }
+            alert(
+              "🎉 ĐĂNG KÝ THÀNH CÔNG!\nDữ liệu tài khoản đã ghi vĩnh viễn vào file database.json.",
+            );
+            switchTab("login");
+            document.getElementById("loginUser").value = username;
+          })
+          .catch((err) => {
+            alert(
+              '❌ Không kết nối được với Server Database! Hãy chắc chắn bạn đã chạy lệnh "node server.js".',
+            );
+          });
       }
 
-      // Xử lý logic Đăng Nhập
+      // ĐĂNG NHẬP ĐỐI CHIẾU FILE THẬT
       function handleLogin() {
         const userInput = document.getElementById("loginUser").value.trim();
         const passInput = document.getElementById("loginPass").value;
@@ -251,27 +259,28 @@
           return;
         }
 
-        let usersList =
-          JSON.parse(localStorage.getItem("web_users_list")) || [];
-
-        // Tìm kiếm xem có tài khoản nào khớp thông tin không
-        const matchedUser = usersList.find(
-          (u) => u.username === userInput && u.password === passInput,
-        );
-
-        if (matchedUser) {
-          // Lưu phiên đăng nhập thành công
-          localStorage.setItem(
-            "currentUser",
-            JSON.stringify({ username: matchedUser.username }),
-          );
-          alert(`👋 Chào mừng quay trở lại, ${matchedUser.username}!`);
-          window.location.href = "index.html"; // Tự chuyển về trang chủ mua hàng
-        } else {
-          alert(
-            "❌ Sai tên tài khoản hoặc mật khẩu không chính xác! Vui lòng thử lại.",
-          );
-        }
+        fetch(`${DATABASE_URL}/data`)
+          .then((res) => res.json())
+          .then((db) => {
+            const matchedUser = db.users.find(
+              (u) => u.username === userInput && u.password === passInput,
+            );
+            if (matchedUser) {
+              localStorage.setItem(
+                "currentUser",
+                JSON.stringify({ username: matchedUser.username }),
+              );
+              alert(`👋 Chào mừng quay trở lại, ${matchedUser.username}!`);
+              window.location.href = "index.html";
+            } else {
+              alert("❌ Sai tên tài khoản hoặc mật khẩu không chính xác!");
+            }
+          })
+          .catch((err) => {
+            alert(
+              '❌ Không kết nối được với Server Database! Hãy chạy lệnh "node server.js".',
+            );
+          });
       }
     </script>
   </body>
