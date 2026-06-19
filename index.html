@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ăn Vặt - Thiên Đường Ăn Vặt Đường Phố</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="main-nav-bar">
+      <div class="nav-container site-container">
+        <a href="#" class="logo-link logo-text">Ăn Vặt</a>
+        <nav class="nav-links-container">
+          <a href="#" class="nav-link active">Trang Chủ</a>
+          <a href="#" class="nav-link">Thực Đơn</a>
+          <a href="#" class="nav-link">Khuyến Mãi</a>
+        </nav>
+        <button class="cart-toggle-btn" id="cartToggleBtn">
+          Giỏ Hàng (<span id="cartCountTop">0</span>)
+        </button>
+      </div>
+    </header>
+
+    <main class="site-container main-layout">
+      <aside class="category-sidebar-container">
+        <h3 class="heading-3 sidebar-title">Danh Mục Món Ăn</h3>
+        <ul class="sidebar-menu">
+          <li class="sidebar-item">
+            <a href="#" class="active" data-category="all">Tất Cả Món</a>
+          </li>
+          <li class="sidebar-item">
+            <a href="#" data-category="dac-san">Đặc Sản Trộn</a>
+          </li>
+          <li class="sidebar-item">
+            <a href="#" data-category="an-vat">Món Ăn Vặt</a>
+          </li>
+          <li class="sidebar-item">
+            <a href="#" data-category="giai-nhiet">Đồ Uống Giải Nhiệt</a>
+          </li>
+        </ul>
+      </aside>
+
+      <section class="content-wrapper">
+        <div class="section-header-container">
+          <h1 class="heading-1">Thực Đơn Hôm Nay</h1>
+        </div>
+        <div class="product-grid" id="productGrid"></div>
+      </section>
+    </main>
+
+    <div class="cart-sidebar-overlay" id="cartOverlay"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+      <div class="cart-header">
+        <h3 class="heading-3">Giỏ Hàng Của Bạn</h3>
+        <button class="close-cart-btn" id="closeCartBtn">&times;</button>
+      </div>
+      <div class="cart-items-container" id="cartItemsContainer">
+        <p class="empty-cart-text">Giỏ hàng đang trống.</p>
+      </div>
+      <div class="cart-footer">
+        <div class="cart-total-row">
+          <span class="label-text">Tổng cộng:</span>
+          <span class="cart-total-price" id="cartTotalPrice">0đ</span>
+        </div>
+        <button class="btn-primary checkout-btn" id="checkoutBtn">
+          TIẾN HÀNH THANH TOÁN
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="productModal">
+      <div class="modal-content">
+        <button class="close-modal-btn" id="closeModalBtn">&times;</button>
+        <div class="modal-body">
+          <div class="modal-image-zone">
+            <div class="modal-discount-badge" id="modalBadge">-20%</div>
+            <img src="" alt="Món ăn" class="product-image" id="modalImage" />
+          </div>
+
+          <div class="modal-info-zone">
+            <div class="modal-text-content">
+              <span class="category-tag" id="modalCategory">Danh mục</span>
+              <h2 class="heading-2" id="modalTitle">Tên món ăn</h2>
+              <p class="body-text" id="modalDescription">Mô tả chi tiết...</p>
+            </div>
+
+            <div class="modal-interactive-content">
+              <div class="modal-price-row">
+                <span class="original-price" id="modalOriginalPrice">0đ</span>
+                <span class="sale-price" id="modalSalePrice">0đ</span>
+              </div>
+              <div class="modal-action-row">
+                <button class="btn-primary" id="modalAddToCartBtn">
+                  THÊM VÀO GIỎ HÀNG
+                </button>
+                <button class="btn-secondary-buy" id="modalBuyNowBtn">
+                  MUA NGAY
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
