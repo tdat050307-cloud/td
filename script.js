@@ -34,7 +34,8 @@ const PRODUCTS = [
     originalPrice: 85000,
     salePrice: 75000,
     discount: "-11%",
-    image: "https://i.ytimg.com/vi/3_Z7V63jH9E/maxresdefault.jpg",
+    image:
+      "https://cdn.pastaxi-manager.onepas.vn/content/uploads/articles/thumkt/pasgo/chan-ga-sa-tac/chan-ga-rut-xuong-ngam-sa-tac.jpg",
     description:
       "Chân gà rút xương giòn sần sật thấm đẫm nước sốt sả tắc chua ngọt, thơm nức mùi lá chanh và ớt tươi băm.",
   },
@@ -46,7 +47,8 @@ const PRODUCTS = [
     originalPrice: null,
     salePrice: 28000,
     discount: "NEW",
-    image: "https://Jarvis.vn/wp-content/uploads/2019/05/tra-vai-thach-vai.jpg",
+    image:
+      "https://eggyolk.vn/wp-content/uploads/2026/04/cach-lam-tra-vai-hat-chia.jpg",
     description:
       "Vị trà vải thanh ngọt thanh mát, topping thạch vải giòn dai kết hợp cùng hạt chia siêu bổ dưỡng giải nhiệt mùa hè.",
   },
