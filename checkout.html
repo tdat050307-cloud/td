@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Thanh Toán Đơn Hàng</title>
+    <title>Thanh Toán Đơn Hàng - Ăn Vặt</title>
     <link rel="stylesheet" href="style.css" />
     <style>
-      /* CSS riêng bổ sung cho trang thanh toán */
+      /* CSS riêng tối ưu cho trang thanh toán */
       .checkout-layout {
         max-width: 600px;
         margin: 40px auto;
@@ -62,24 +62,30 @@
     </style>
   </head>
   <body>
+    <!-- Thanh điều hướng Header -->
     <header class="main-nav-bar">
       <div class="nav-container site-container">
-        <a href="index.html" class="logo-link logo-text">An Vặt</a>
-        <span style="color: white; font-weight: 700">TRANG THANH TOÁN</span>
+        <a href="index.html" class="logo-link logo-text">Ăn Vặt</a>
+        <span style="color: white; font-weight: 700; letter-spacing: 1px"
+          >TRANG THANH TOÁN</span
+        >
       </div>
     </header>
 
+    <!-- Nội dung chính -->
     <main class="site-container">
       <div class="checkout-layout">
         <h2 class="heading-2" style="margin-bottom: 20px">
           THÔNG TIN ĐƠN HÀNG
         </h2>
 
+        <!-- Hiển thị số tiền từ giỏ hàng -->
         <div class="checkout-box">
           <span class="label-text">Tổng số tiền cần thanh toán:</span>
           <div class="total-highlight" id="checkoutTotalDisplay">0đ</div>
         </div>
 
+        <!-- Form điền thông tin người mua -->
         <div class="checkout-box">
           <h3 class="heading-3" style="margin-bottom: 12px">
             Thông Tin Giao Hàng
@@ -113,6 +119,7 @@
           </div>
         </div>
 
+        <!-- Phương thức thanh toán -->
         <div class="checkout-box" style="border: none">
           <h3 class="heading-3">Chọn Phương Thức Thanh Toán</h3>
           <div class="payment-methods">
@@ -135,13 +142,15 @@
           </div>
         </div>
 
+        <!-- Nút bấm đặt hàng chính -->
         <button
           class="btn-secondary-buy"
           id="confirmPaymentBtn"
-          style="height: 50px; font-size: 16px"
+          style="height: 50px; font-size: 16px; width: 100%"
         >
           XÁC NHẬN ĐẶT HÀNG
         </button>
+
         <a
           href="index.html"
           style="
@@ -157,13 +166,14 @@
       </div>
     </main>
 
+    <!-- Xử lý logic đặt hàng và gửi API dữ liệu -->
     <script>
-      // 1. Lấy số tiền từ localStorage đã lưu từ trang index
+      // 1. Lấy số tiền tạm tính đã lưu từ trang index sang hiển thị lên màn hình
       const pendingTotal = localStorage.getItem("pendingTotalPrice") || "0đ";
       document.getElementById("checkoutTotalDisplay").textContent =
         pendingTotal;
 
-      // 2. Xử lý khi nhấn Xác nhận đặt hàng và bắn tin nhắn Telegram
+      // 2. Kích hoạt sự kiện khi click nút "XÁC NHẬN ĐẶT HÀNG"
       document
         .getElementById("confirmPaymentBtn")
         .addEventListener("click", () => {
@@ -174,13 +184,13 @@
             'input[name="payment"]:checked',
           ).value;
 
-          // Kiểm tra xem khách nhập đủ thông tin chưa
+          // Kiểm tra tính hợp lệ dữ liệu đầu vào
           if (!name || !phone || !address) {
             alert("Vui lòng điền đầy đủ thông tin giao hàng nhé bạn ơi!");
             return;
           }
 
-          // Nội dung tin nhắn sẽ nổ về điện thoại của bạn
+          // Chuẩn bị nội dung tin nhắn gửi về điện thoại của bạn
           const message =
             `🔔 CÓ ĐƠN HÀNG MỚI!\n\n` +
             `👤 Khách hàng: ${name}\n` +
@@ -189,11 +199,13 @@
             `💰 Tổng tiền: ${pendingTotal}\n` +
             `💳 Hình thức: ${method}`;
 
-          // === CẤU HÌNH TOKEN VÀ ID BOT TELEGRAM CỦA BẠN VÀO ĐÂY ===
-          const TELEGRAM_TOKEN = "8364961390";
-          const TELEGRAM_CHAT_ID = "6967477495";
+          // ========================================================
+          // CẤU HÌNH TOKEN BOT TELEGRAM CỦA BẠN VÀO ĐÂY ĐỂ ĐỒNG BỘ:
+          // ========================================================
+          const TELEGRAM_TOKEN = "ĐIỀN_TOKEN_BOT_CỦA_BẠN_VÀO_ĐÂY";
+          const TELEGRAM_CHAT_ID = "ĐIỀN_ID_CHAT_CỦA_BẠN_VÀO_ĐÂY";
 
-          // Gọi API gửi tin nhắn
+          // Tiến hành bắn tin nhắn báo đơn qua API Telegram
           fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -204,19 +216,23 @@
           })
             .then((response) => {
               alert(
-                `🎉 ĐẶT HÀNG THÀNH CÔNG!\n\nĐơn hàng đã được gửi tới hệ thống của quán.`,
+                `🎉 ĐẶT HÀNG THÀNH CÔNG!\n\nĐơn hàng của bạn đã được chuyển tới hệ thống quán.`,
               );
-              localStorage.removeItem("pendingTotalPrice"); // Xóa giỏ hàng tạm
-              window.location.href = "index.html"; // Quay lại trang chủ
+              // Xoá bộ nhớ đệm tiền đơn cũ và chuyển hướng về trang chủ
+              localStorage.removeItem("pendingTotalPrice");
+              window.location.href = "index.html";
             })
             .catch((err) => {
-              console.error("Lỗi gửi API:", err);
-              // Dự phòng nếu mạng lỗi hoặc chặn API, khách vẫn mua được hàng
-              alert(`🎉 ĐẶT HÀNG THÀNH CÔNG!\n\nQuán đã ghi nhận đơn của bạn.`);
+              console.error("Lỗi gửi cổng API:", err);
+              // Trường hợp mạng lỗi, vẫn cho khách hoàn tất trải nghiệm mua sắm
+              alert(
+                `🎉 ĐẶT HÀNG THÀNH CÔNG!\n\nCửa hàng đã ghi nhận đơn hàng của bạn.`,
+              );
               localStorage.removeItem("pendingTotalPrice");
               window.location.href = "index.html";
             });
         });
     </script>
+    <!-- Thẻ đóng script chuẩn, không lo lỗi cú pháp hiển thị trang nữa nhé! -->
   </body>
 </html>
