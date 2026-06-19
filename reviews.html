@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đánh Giá Khách Hàng - Ăn Vặt</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .reviews-layout {
+        max-width: 750px;
+        margin: 40px auto;
+        background: #fff;
+        border: 1px solid var(--color-dark-charcoal);
+        padding: 30px;
+      }
+      .rating-select {
+        display: flex;
+        gap: 8px;
+        font-size: 28px;
+        cursor: pointer;
+        color: #ccc;
+        margin: 10px 0;
+      }
+      .rating-star.selected {
+        color: #ffcc00;
+      }
+      .review-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        background: #fdfdfd;
+        padding: 20px;
+        border: 1px dashed var(--color-light-border);
+        margin-bottom: 35px;
+      }
+      .review-input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .review-input-group input,
+      .review-input-group textarea {
+        padding: 10px;
+        border: 1px solid var(--color-light-border);
+        font-size: 14px;
+      }
+      .review-input-group textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      .review-input-group input:focus,
+      .review-input-group textarea:focus {
+        outline: 1px solid var(--color-dark-charcoal);
+      }
+      .review-item-card {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        margin-bottom: 15px;
+      }
+      .review-meta {
+        display: flex;
+        justify-content: space-between;
+        color: var(--color-medium-gray);
+        font-size: 13px;
+        margin-top: 5px;
+      }
+      .stars-display {
+        color: #ffcc00;
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="main-nav-bar">
+      <div class="nav-container site-container">
+        <a href="index.html" class="logo-link logo-text">Ăn Vặt</a>
+        <nav class="desktop-menu-links">
+          <a href="index.html" class="menu-item-link">Trang Chủ</a>
+          <a href="reviews.html" class="menu-item-link active">Đánh Giá</a>
+          <a href="auth.html" class="menu-item-link" id="userMenuLink"
+            >Đăng Nhập</a
+          >
+        </nav>
+        <span
+          style="color: white; font-size: 12px; font-weight: bold"
+          id="topUserHint"
+        ></span>
+      </div>
+    </header>
+
+    <main class="site-container">
+      <div class="reviews-layout">
+        <h2
+          class="heading-2"
+          style="
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--color-burgundy-red);
+            padding-bottom: 8px;
+          "
+        >
+          Phản Hồi & Đánh Giá
+        </h2>
+        <p
+          class="body-text"
+          style="color: var(--color-medium-gray); margin-bottom: 25px"
+        >
+          Ý kiến của bạn là động lực giúp quán cải thiện chất lượng món ăn và
+          dịch vụ mỗi ngày!
+        </p>
+
+        <div class="review-form">
+          <h4 class="heading-3" style="font-size: 16px">
+            Gửi đánh giá của bạn
+          </h4>
+
+          <div class="review-input-group">
+            <label class="label-text">Chọn số sao của bạn *</label>
+            <div class="rating-select" id="starRatingSelector">
+              <span class="rating-star selected" data-value="1">★</span>
+              <span class="rating-star selected" data-value="2">★</span>
+              <span class="rating-star selected" data-value="3">★</span>
+              <span class="rating-star selected" data-value="4">★</span>
+              <span class="rating-star selected" data-value="5">★</span>
+            </div>
+          </div>
+
+          <div class="review-input-group">
+            <label class="label-text">Tên người đánh giá *</label>
+            <input
+              type="text"
+              id="reviewAuthor"
+              placeholder="Nhập tên của bạn..."
+            />
+          </div>
+
+          <div class="review-input-group">
+            <label class="label-text">Nội dung bình luận *</label>
+            <textarea
+              id="reviewContent"
+              placeholder="Món ăn ngon không? Giao hàng nhanh không bạn ơi..."
+            ></textarea>
+          </div>
+
+          <button
+            class="btn-primary-cart"
+            onclick="submitReview()"
+            style="height: 42px; width: 180px; font-size: 13px"
+          >
+            GỬI ĐÁNH GIÁ NGAY
+          </button>
+        </div>
+
+        <h3 class="heading-3" style="margin-bottom: 20px">
+          Tất cả bình luận cảm nhận
+        </h3>
+        <div id="reviewsContainerList"></div>
+      </div>
+    </main>
+
+    <script>
+      let selectedRatingScore = 5;
+
+      // Lắng nghe sự kiện click chọn sao đánh giá
+      const stars = document.querySelectorAll(".rating-star");
+      stars.forEach((star) => {
+        star.addEventListener("click", () => {
+          selectedRatingScore = parseInt(star.getAttribute("data-value"));
+          stars.forEach((s) => {
+            const val = parseInt(s.getAttribute("data-value"));
+            if (val <= selectedRatingScore) {
+              s.classList.add("selected");
+            } else {
+              s.classList.remove("selected");
+            }
+          });
+        });
+      });
+
+      // Tải và hiển thị các bình luận ra giao diện
+      function loadAndDisplayReviews() {
+        const container = document.getElementById("reviewsContainerList");
+        if (!container) return;
+        container.innerHTML = "";
+
+        // Khởi tạo một số đánh giá mẫu nếu chưa có dữ liệu trong máy
+        let reviewsData = JSON.parse(localStorage.getItem("user_reviews_data"));
+        if (!reviewsData) {
+          reviewsData = [
+            {
+              name: "Nguyễn Văn Hùng",
+              score: 5,
+              content:
+                "Bánh tráng trộn siêu nhiều tóp mỡ, giao tới chân gà còn mát lạnh ngâm sả tắc rất thấm vị. Sẽ ủng hộ tiếp!",
+              date: "18/06/2026 19:15",
+            },
+            {
+              name: "Linh Đan",
+              score: 4,
+              content:
+                "Trà thạch vải hạt chia uống thanh mát giải nhiệt tốt, nem chua rán hơi nguội tí do ship xa nhưng vẫn giòn.",
+              date: "19/06/2026 12:40",
+            },
+          ];
+          localStorage.setItem(
+            "user_reviews_data",
+            JSON.stringify(reviewsData),
+          );
+        }
+
+        // Đổ ngược danh sách để đánh giá mới nhất lên đầu
+        reviewsData
+          .slice()
+          .reverse()
+          .forEach((r) => {
+            let starStr = "★".repeat(r.score) + "☆".repeat(5 - r.score);
+            container.innerHTML += `
+          <div class="review-item-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong style="font-size:15px; color:var(--color-dark-charcoal);">${r.name}</strong>
+              <span class="stars-display">${starStr}</span>
+            </div>
+            <p class="body-text" style="margin-top: 8px; font-size:14px;">${r.content}</p>
+            <div class="review-meta">
+              <span>Đã kiểm chứng mua hàng</span>
+              <span>${r.date}</span>
+            </div>
+          </div>
+        `;
+          });
+      }
+
+      // Gửi đánh giá mới lên hệ thống
+      function submitReview() {
+        const authorInput = document
+          .getElementById("reviewAuthor")
+          .value.trim();
+        const contentInput = document
+          .getElementById("reviewContent")
+          .value.trim();
+
+        if (!authorInput || !contentInput) {
+          alert(
+            "Vui lòng nhập tên và viết nội dung bình luận cảm nhận của bạn!",
+          );
+          return;
+        }
+
+        let reviewsData =
+          JSON.parse(localStorage.getItem("user_reviews_data")) || [];
+
+        // Lấy thời gian hiện tại
+        const now = new Date();
+        const timeStr = `${String(now.getDate()).padStart(2, "0")}/${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+        // Thêm bài đánh giá vào mảng
+        reviewsData.push({
+          name: authorInput,
+          score: selectedRatingScore,
+          content: contentInput,
+          date: timeStr,
+        });
+
+        localStorage.setItem("user_reviews_data", JSON.stringify(reviewsData));
+        alert("🎉 Cảm ơn bạn! Đánh giá đã được đăng tải thành công công khai.");
+
+        // Làm sạch khung nhập để sẵn sàng cho lần sau
+        document.getElementById("reviewContent").value = "";
+        loadAndDisplayReviews();
+      }
+
+      // Chạy các chức năng khi tải xong trang
+      document.addEventListener("DOMContentLoaded", () => {
+        // Điền sẵn tên nếu người dùng đã đăng nhập tài khoản trước đó
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        if (currentUser) {
+          document.getElementById("reviewAuthor").value = currentUser.username;
+          const topUserHint = document.getElementById("topUserHint");
+          if (topUserHint)
+            topUserHint.textContent = `Tài khoản: ${currentUser.username}`;
+        }
+
+        // Xử lý nút đăng nhập / đăng xuất trên header trang đánh giá
+        const userMenuLink = document.getElementById("userMenuLink");
+        if (userMenuLink && currentUser) {
+          userMenuLink.textContent = `Hi, ${currentUser.username} (Thoát)`;
+          userMenuLink.href = "#";
+          userMenuLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (confirm("Bạn có chắc chắn muốn đăng xuất tài khoản không?")) {
+              localStorage.removeItem("currentUser");
+              window.location.reload();
+            }
+          });
+        }
+
+        loadAndDisplayReviews();
+      });
+    </script>
+  </body>
+</html>
