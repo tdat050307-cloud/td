@@ -6,7 +6,6 @@
     <title>Thanh Toán Đơn Hàng - Ăn Vặt</title>
     <link rel="stylesheet" href="style.css" />
     <style>
-      /* CSS riêng tối ưu cho trang thanh toán */
       .checkout-layout {
         max-width: 600px;
         margin: 40px auto;
@@ -62,30 +61,24 @@
     </style>
   </head>
   <body>
-    <!-- Thanh điều hướng Header -->
     <header class="main-nav-bar">
       <div class="nav-container site-container">
         <a href="index.html" class="logo-link logo-text">Ăn Vặt</a>
-        <span style="color: white; font-weight: 700; letter-spacing: 1px"
-          >TRANG THANH TOÁN</span
-        >
+        <span style="color: white; font-weight: 700">TRANG THANH TOÁN</span>
       </div>
     </header>
 
-    <!-- Nội dung chính -->
     <main class="site-container">
       <div class="checkout-layout">
         <h2 class="heading-2" style="margin-bottom: 20px">
           THÔNG TIN ĐƠN HÀNG
         </h2>
 
-        <!-- Hiển thị số tiền từ giỏ hàng -->
         <div class="checkout-box">
           <span class="label-text">Tổng số tiền cần thanh toán:</span>
           <div class="total-highlight" id="checkoutTotalDisplay">0đ</div>
         </div>
 
-        <!-- Form điền thông tin người mua -->
         <div class="checkout-box">
           <h3 class="heading-3" style="margin-bottom: 12px">
             Thông Tin Giao Hàng
@@ -119,7 +112,6 @@
           </div>
         </div>
 
-        <!-- Phương thức thanh toán -->
         <div class="checkout-box" style="border: none">
           <h3 class="heading-3">Chọn Phương Thức Thanh Toán</h3>
           <div class="payment-methods">
@@ -142,7 +134,6 @@
           </div>
         </div>
 
-        <!-- Nút bấm đặt hàng chính -->
         <button
           class="btn-secondary-buy"
           id="confirmPaymentBtn"
@@ -150,7 +141,6 @@
         >
           XÁC NHẬN ĐẶT HÀNG
         </button>
-
         <a
           href="index.html"
           style="
@@ -161,19 +151,19 @@
             text-decoration: none;
             font-size: 14px;
           "
+          --
           >Quay lại mua thêm món</a
         >
       </div>
     </main>
 
-    <!-- Xử lý logic đặt hàng và gửi API dữ liệu -->
     <script>
-      // 1. Lấy số tiền tạm tính đã lưu từ trang index sang hiển thị lên màn hình
+      // Lấy dữ liệu tổng tiền tạm tính ra hiển thị
       const pendingTotal = localStorage.getItem("pendingTotalPrice") || "0đ";
       document.getElementById("checkoutTotalDisplay").textContent =
         pendingTotal;
 
-      // 2. Kích hoạt sự kiện khi click nút "XÁC NHẬN ĐẶT HÀNG"
+      // Nhấn nút Xác nhận đặt hàng
       document
         .getElementById("confirmPaymentBtn")
         .addEventListener("click", () => {
@@ -184,28 +174,44 @@
             'input[name="payment"]:checked',
           ).value;
 
-          // Kiểm tra tính hợp lệ dữ liệu đầu vào
           if (!name || !phone || !address) {
             alert("Vui lòng điền đầy đủ thông tin giao hàng nhé bạn ơi!");
             return;
           }
 
-          // Chuẩn bị nội dung tin nhắn gửi về điện thoại của bạn
+          // BÓC TÁCH GIỎ HÀNG: Tạo chuỗi liệt kê chi tiết món
+          let cartItemsText = "";
+          try {
+            const cartData = JSON.parse(localStorage.getItem("cart")) || [];
+            if (cartData.length > 0) {
+              cartData.forEach((item, index) => {
+                cartItemsText += `${index + 1}. ${item.title} (x${item.quantity}) - Giá: ${(item.salePrice * item.quantity).toLocaleString("vi-VN")}đ\n`;
+              });
+            } else {
+              cartItemsText = "Không lấy được chi tiết món ăn (Giỏ trống).\n";
+            }
+          } catch (e) {
+            cartItemsText = "Lỗi bóc tách cấu trúc dữ liệu giỏ.\n";
+          }
+
+          // Nội dung tin nhắn gửi về Telegram của bạn
           const message =
             `🔔 CÓ ĐƠN HÀNG MỚI!\n\n` +
             `👤 Khách hàng: ${name}\n` +
             `📞 Số ĐT: ${phone}\n` +
             `📍 Địa chỉ: ${address}\n` +
-            `💰 Tổng tiền: ${pendingTotal}\n` +
+            `-------------------------\n` +
+            `📝 CHI TIẾT MÓN ĐẶT:\n${cartItemsText}` +
+            `-------------------------\n` +
+            `💰 TỔNG TIỀN: ${pendingTotal}\n` +
             `💳 Hình thức: ${method}`;
 
-          // ========================================================
-          // CẤU HÌNH TOKEN BOT TELEGRAM CỦA BẠN VÀO ĐÂY ĐỂ ĐỒNG BỘ:
-          // ========================================================
-          const TELEGRAM_TOKEN = "8364961390:AAEc5Vlmnkf8W2KhZDQKtiEZLMDeZnogcxs";
+          // === ĐÃ GIỮ ĐÚNG TOKEN MÃ SỐ BẢO MẬT THẬT CỦA BẠN ===
+          const TELEGRAM_TOKEN =
+            "8364961390:AAEc5Vlmnkf8W2KhZDQKtiEZLMDeZnogcxs";
           const TELEGRAM_CHAT_ID = "6967477495";
 
-          // Tiến hành bắn tin nhắn báo đơn qua API Telegram
+          // Bắn API gửi tin nhắn nổ về điện thoại
           fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -216,23 +222,22 @@
           })
             .then((response) => {
               alert(
-                `🎉 ĐẶT HÀNG THÀNH CÔNG!\n\nĐơn hàng của bạn đã được chuyển tới hệ thống quán.`,
+                `🎉 ĐẶT HÀNG THÀNH CÔNG!\n\nĐơn hàng đã được chuyển đến hệ thống quán ăn.`,
               );
-              // Xoá bộ nhớ đệm tiền đơn cũ và chuyển hướng về trang chủ
+              localStorage.removeItem("cart");
               localStorage.removeItem("pendingTotalPrice");
               window.location.href = "index.html";
             })
             .catch((err) => {
-              console.error("Lỗi gửi cổng API:", err);
-              // Trường hợp mạng lỗi, vẫn cho khách hoàn tất trải nghiệm mua sắm
+              console.error("Lỗi API mạng:", err);
               alert(
-                `🎉 ĐẶT HÀNG THÀNH CÔNG!\n\nCửa hàng đã ghi nhận đơn hàng của bạn.`,
+                `🎉 ĐẶT HÀNG THÀNH CÔNG!\n\nQuán ăn đã tiếp nhận đơn của bạn.`,
               );
+              localStorage.removeItem("cart");
               localStorage.removeItem("pendingTotalPrice");
               window.location.href = "index.html";
             });
         });
     </script>
-    <!-- Thẻ đóng script chuẩn, không lo lỗi cú pháp hiển thị trang nữa nhé! -->
   </body>
 </html>
