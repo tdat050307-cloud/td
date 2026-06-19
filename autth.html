@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng Nhập / Đăng Ký - Ăn Vặt</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .auth-layout {
+        max-width: 450px;
+        margin: 60px auto;
+        padding: 30px;
+        background: #fff;
+        border: 1px solid var(--color-dark-charcoal);
+      }
+      .auth-tabs {
+        display: flex;
+        border-bottom: 2px solid var(--color-light-border);
+        margin-bottom: 25px;
+      }
+      .auth-tab-btn {
+        flex: 1;
+        padding: 12px;
+        text-align: center;
+        background: none;
+        border: none;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        color: var(--color-medium-gray);
+        text-transform: uppercase;
+      }
+      .auth-tab-btn.active {
+        color: var(--color-burgundy-red);
+        border-bottom: 3px solid var(--color-burgundy-red);
+        margin-bottom: -2px;
+      }
+      .form-box {
+        display: none;
+      }
+      .form-box.active {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .form-group input {
+        height: 42px;
+        padding: 0 12px;
+        border: 1px solid var(--color-light-border);
+        font-size: 14px;
+      }
+      .form-group input:focus {
+        outline: 1px solid var(--color-dark-charcoal);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="main-nav-bar">
+      <div class="nav-container site-container">
+        <a href="index.html" class="logo-link logo-text">Ăn Vặt</a>
+        <span
+          style="
+            color: white;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 14px;
+          "
+          >Tài khoản</span
+        >
+      </div>
+    </header>
+
+    <main class="site-container">
+      <div class="auth-layout">
+        <div class="auth-tabs">
+          <button class="auth-tab-btn active" onclick="switchTab('login')">
+            Đăng Nhập
+          </button>
+          <button class="auth-tab-btn" onclick="switchTab('register')">
+            Đăng Ký
+          </button>
+        </div>
+
+        <div id="loginFormBox" class="form-box active">
+          <div class="form-group">
+            <label class="label-text">Tên đăng nhập hoặc Email *</label>
+            <input
+              type="text"
+              id="loginUser"
+              placeholder="Nhập tên tài khoản..."
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="label-text">Mật khẩu *</label>
+            <input
+              type="password"
+              id="loginPass"
+              placeholder="Nhập mật khẩu..."
+              required
+            />
+          </div>
+          <button
+            class="btn-secondary-buy"
+            onclick="handleLogin()"
+            style="height: 45px; margin-top: 10px; font-size: 14px"
+          >
+            ĐĂNG NHẬP NGAY
+          </button>
+        </div>
+
+        <div id="registerFormBox" class="form-box">
+          <div class="form-group">
+            <label class="label-text">Tên tài khoản mới *</label>
+            <input
+              type="text"
+              id="regUser"
+              placeholder="Tên viết liền không dấu..."
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="label-text">Địa chỉ Email *</label>
+            <input
+              type="email"
+              id="regEmail"
+              placeholder="example@gmail.com"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="label-text">Mật khẩu bảo mật *</label>
+            <input
+              type="password"
+              id="regPass"
+              placeholder="Tối thiểu 6 ký tự..."
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="label-text">Nhập lại mật khẩu *</label>
+            <input
+              type="password"
+              id="regConfirmPass"
+              placeholder="Xác nhận lại mật khẩu..."
+              required
+            />
+          </div>
+          <button
+            class="btn-primary-cart"
+            onclick="handleRegister()"
+            style="height: 45px; margin-top: 10px; font-size: 14px"
+          >
+            TẠO TÀI KHOẢN MỚI
+          </button>
+        </div>
+
+        <a
+          href="index.html"
+          style="
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: var(--color-medium-gray);
+            text-decoration: none;
+            font-size: 13px;
+          "
+          >← Quay lại xem thực đơn</a
+        >
+      </div>
+    </main>
+
+    <script>
+      // Hàm chuyển đổi giao diện Đăng Nhập / Đăng Ký
+      function switchTab(type) {
+        const tabs = document.querySelectorAll(".auth-tab-btn");
+        const loginBox = document.getElementById("loginFormBox");
+        const registerBox = document.getElementById("registerFormBox");
+
+        tabs.forEach((t) => t.classList.remove("active"));
+
+        if (type === "login") {
+          tabs[0].classList.add("active");
+          loginBox.classList.add("active");
+          registerBox.classList.remove("active");
+        } else {
+          tabs[1].classList.add("active");
+          registerBox.classList.add("active");
+          loginBox.classList.remove("active");
+        }
+      }
+
+      // Xử lý logic Đăng Ký tài khoản mới
+      function handleRegister() {
+        const username = document.getElementById("regUser").value.trim();
+        const email = document.getElementById("regEmail").value.trim();
+        const password = document.getElementById("regPass").value;
+        const confirmPassword = document.getElementById("regConfirmPass").value;
+
+        if (!username || !email || !password || !confirmPassword) {
+          alert("Vui lòng điền đầy đủ tất cả thông tin đăng ký!");
+          return;
+        }
+        if (password.length < 6) {
+          alert("Mật khẩu phải dài tối thiểu từ 6 ký tự trở lên!");
+          return;
+        }
+        if (password !== confirmPassword) {
+          alert("Mật khẩu nhập lại không trùng khớp! Vui lòng kiểm tra kỹ.");
+          return;
+        }
+
+        // Lấy danh sách tài khoản đã có trong bộ nhớ máy
+        let usersList =
+          JSON.parse(localStorage.getItem("web_users_list")) || [];
+
+        // Kiểm tra xem tên đăng nhập này đã có ai dùng chưa
+        const isExist = usersList.some(
+          (user) => user.username.toLowerCase() === username.toLowerCase(),
+        );
+        if (isExist) {
+          alert(
+            "Tên đăng nhập này đã tồn tại trên hệ thống, vui lòng chọn tên khác!",
+          );
+          return;
+        }
+
+        // Lưu tài khoản mới vào cơ sở dữ liệu localStorage
+        usersList.push({ username, email, password });
+        localStorage.setItem("web_users_list", JSON.stringify(usersList));
+
+        alert(
+          "🎉 ĐĂNG KÝ THÀNH CÔNG!\nBây giờ bạn có thể dùng tài khoản này để đăng nhập.",
+        );
+        switchTab("login");
+        document.getElementById("loginUser").value = username;
+      }
+
+      // Xử lý logic Đăng Nhập
+      function handleLogin() {
+        const userInput = document.getElementById("loginUser").value.trim();
+        const passInput = document.getElementById("loginPass").value;
+
+        if (!userInput || !passInput) {
+          alert("Vui lòng điền đầy đủ tài khoản và mật khẩu!");
+          return;
+        }
+
+        let usersList =
+          JSON.parse(localStorage.getItem("web_users_list")) || [];
+
+        // Tìm kiếm xem có tài khoản nào khớp thông tin không
+        const matchedUser = usersList.find(
+          (u) => u.username === userInput && u.password === passInput,
+        );
+
+        if (matchedUser) {
+          // Lưu phiên đăng nhập thành công
+          localStorage.setItem(
+            "currentUser",
+            JSON.stringify({ username: matchedUser.username }),
+          );
+          alert(`👋 Chào mừng quay trở lại, ${matchedUser.username}!`);
+          window.location.href = "index.html"; // Tự chuyển về trang chủ mua hàng
+        } else {
+          alert(
+            "❌ Sai tên tài khoản hoặc mật khẩu không chính xác! Vui lòng thử lại.",
+          );
+        }
+      }
+    </script>
+  </body>
+</html>
