@@ -1,4 +1,3 @@
-
 // 1. DỮ LIỆU SẢN PHẨM (Phạm vi Toàn cục - Global)
 const PRODUCTS = [
   {
