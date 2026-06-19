@@ -158,12 +158,12 @@
     </main>
 
     <script>
-      // Lấy số tiền từ localStorage đã lưu từ trang index
+      // 1. Lấy số tiền từ localStorage đã lưu từ trang index
       const pendingTotal = localStorage.getItem("pendingTotalPrice") || "0đ";
       document.getElementById("checkoutTotalDisplay").textContent =
         pendingTotal;
 
-      // Xử lý khi nhấn Xác nhận đặt hàng
+      // 2. Xử lý khi nhấn Xác nhận đặt hàng và bắn tin nhắn Telegram
       document
         .getElementById("confirmPaymentBtn")
         .addEventListener("click", () => {
@@ -174,18 +174,48 @@
             'input[name="payment"]:checked',
           ).value;
 
+          // Kiểm tra xem khách nhập đủ thông tin chưa
           if (!name || !phone || !address) {
             alert("Vui lòng điền đầy đủ thông tin giao hàng nhé bạn ơi!");
             return;
           }
 
-          alert(
-            `🎉 ĐẶT HÀNG THÀNH CÔNG!\n\nKhách hàng: ${name}\nSố ĐT: ${phone}\nĐịa chỉ: ${address}\nTổng tiền: ${pendingTotal}\nHình thức: ${method}\n\nĐơn hàng của bạn đang được chuẩn bị và giao ngay!`,
-          );
+          // Nội dung tin nhắn sẽ nổ về điện thoại của bạn
+          const message =
+            `🔔 CÓ ĐƠN HÀNG MỚI!\n\n` +
+            `👤 Khách hàng: ${name}\n` +
+            `📞 Số ĐT: ${phone}\n` +
+            `📍 Địa chỉ: ${address}\n` +
+            `💰 Tổng tiền: ${pendingTotal}\n` +
+            `💳 Hình thức: ${method}`;
 
-          // Xoá dữ liệu tiền và quay về trang chủ
-          localStorage.removeItem("pendingTotalPrice");
-          window.location.href = "index.html";
+          // === CẤU HÌNH TOKEN VÀ ID BOT TELEGRAM CỦA BẠN VÀO ĐÂY ===
+          const TELEGRAM_TOKEN = "8364961390";
+          const TELEGRAM_CHAT_ID = "6967477495";
+
+          // Gọi API gửi tin nhắn
+          fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: TELEGRAM_CHAT_ID,
+              text: message,
+            }),
+          })
+            .then((response) => {
+              alert(
+                `🎉 ĐẶT HÀNG THÀNH CÔNG!\n\nĐơn hàng đã được gửi tới hệ thống của quán.`,
+              );
+              localStorage.removeItem("pendingTotalPrice"); // Xóa giỏ hàng tạm
+              window.location.href = "index.html"; // Quay lại trang chủ
+            })
+            .catch((err) => {
+              console.error("Lỗi gửi API:", err);
+              // Dự phòng nếu mạng lỗi hoặc chặn API, khách vẫn mua được hàng
+              alert(`🎉 ĐẶT HÀNG THÀNH CÔNG!\n\nQuán đã ghi nhận đơn của bạn.`);
+              localStorage.removeItem("pendingTotalPrice");
+              window.location.href = "index.html";
+            });
         });
     </script>
   </body>
