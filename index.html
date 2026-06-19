@@ -3,97 +3,140 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ăn Vặt - Thiên Đường Ăn Vặt Đường Phố</title>
+    <title>Ăn Vặt - Thực Đơn Hôm Nay</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <header class="main-nav-bar">
       <div class="nav-container site-container">
-        <a href="#" class="logo-link logo-text">Ăn Vặt</a>
-        <nav class="nav-links-container">
-          <a href="#" class="nav-link active">Trang Chủ</a>
-          <a href="#" class="nav-link">Thực Đơn</a>
-          <a href="#" class="nav-link">Khuyến Mãi</a>
+        <a href="index.html" class="logo-link logo-text">Ăn Vặt</a>
+        <nav class="desktop-menu-links">
+          <a href="#" class="menu-item-link active">Trang Chủ</a>
+          <a href="#" class="menu-item-link">Thực Đơn</a>
+          <a href="#" class="menu-item-link">Khuyến Mãi</a>
         </nav>
-        <button class="cart-toggle-btn" id="cartToggleBtn">
+        <button class="btn-primary-cart" id="cartToggleBtn">
           Giỏ Hàng (<span id="cartCountTop">0</span>)
         </button>
       </div>
     </header>
 
-    <main class="site-container main-layout">
-      <aside class="category-sidebar-container">
-        <h3 class="heading-3 sidebar-title">Danh Mục Món Ăn</h3>
-        <ul class="sidebar-menu">
-          <li class="sidebar-item">
-            <a href="#" class="active" data-category="all">Tất Cả Món</a>
-          </li>
-          <li class="sidebar-item">
-            <a href="#" data-category="dac-san">Đặc Sản Trộn</a>
-          </li>
-          <li class="sidebar-item">
-            <a href="#" data-category="an-vat">Món Ăn Vặt</a>
-          </li>
-          <li class="sidebar-item">
-            <a href="#" data-category="giai-nhiet">Đồ Uống Giải Nhiệt</a>
-          </li>
-        </ul>
+    <main
+      class="site-container main-layout-grid"
+      style="margin-top: 30px; margin-bottom: 50px"
+    >
+      <aside class="sidebar-category-area">
+        <h3
+          class="heading-3"
+          style="
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--color-burgundy-red);
+          "
+        >
+          Danh Mục Món Ăn
+        </h3>
+        <div class="sidebar-menu">
+          <div class="sidebar-item">
+            <a href="#" class="category-btn active" data-category="all"
+              >Tất Cả Món</a
+            >
+          </div>
+          <div class="sidebar-item">
+            <a href="#" class="category-btn" data-category="dac-san"
+              >Đặc Sản Trộn</a
+            >
+          </div>
+          <div class="sidebar-item">
+            <a href="#" class="category-btn" data-category="an-vat"
+              >Món Ăn Vặt</a
+            >
+          </div>
+          <div class="sidebar-item">
+            <a href="#" class="category-btn" data-category="giai-nhiet"
+              >Đồ Uống Giải Nhiệt</a
+            >
+          </div>
+        </div>
       </aside>
 
-      <section class="content-wrapper">
-        <div class="section-header-container">
-          <h1 class="heading-1">Thực Đơn Hôm Nay</h1>
-        </div>
-        <div class="product-grid" id="productGrid"></div>
+      <section class="products-display-area">
+        <h2 class="heading-2" style="margin-bottom: 20px">Thực Đơn Hôm Nay</h2>
+        <div class="product-grid" id="productGridContainer"></div>
       </section>
     </main>
 
-    <div class="cart-sidebar-overlay" id="cartOverlay"></div>
+    <div class="cart-overlay" id="cartOverlay"></div>
     <div class="cart-sidebar" id="cartSidebar">
       <div class="cart-header">
         <h3 class="heading-3">Giỏ Hàng Của Bạn</h3>
-        <button class="close-cart-btn" id="closeCartBtn">&times;</button>
+        <button class="close-btn" id="cartCloseBtn">&times;</button>
       </div>
-      <div class="cart-items-container" id="cartItemsContainer">
-        <p class="empty-cart-text">Giỏ hàng đang trống.</p>
-      </div>
+      <div class="cart-body-items" id="cartItemsList"></div>
       <div class="cart-footer">
         <div class="cart-total-row">
-          <span class="label-text">Tổng cộng:</span>
-          <span class="cart-total-price" id="cartTotalPrice">0đ</span>
+          <span>Tổng cộng:</span>
+          <span
+            id="cartTotalPrice"
+            style="font-weight: 700; color: var(--color-burgundy-red)"
+            >0đ</span
+          >
         </div>
-        <button class="btn-primary checkout-btn" id="checkoutBtn">
+        <button
+          class="btn-secondary-buy"
+          id="checkoutBtn"
+          style="width: 100%; margin-top: 15px; height: 45px"
+        >
           TIẾN HÀNH THANH TOÁN
         </button>
       </div>
     </div>
 
-    <div class="modal-overlay" id="productModal">
+    <div class="modal-blur-bg" id="productDetailModal">
       <div class="modal-content">
-        <button class="close-modal-btn" id="closeModalBtn">&times;</button>
+        <button class="modal-close-icon" id="modalCloseBtn">&times;</button>
         <div class="modal-body">
           <div class="modal-image-zone">
             <div class="modal-discount-badge" id="modalBadge">-20%</div>
-            <img src="" alt="Món ăn" class="product-image" id="modalImage" />
+            <img src="" alt="Món ăn chi tiết" id="modalImage" />
           </div>
-
           <div class="modal-info-zone">
-            <div class="modal-text-content">
-              <span class="category-tag" id="modalCategory">Danh mục</span>
-              <h2 class="heading-2" id="modalTitle">Tên món ăn</h2>
-              <p class="body-text" id="modalDescription">Mô tả chi tiết...</p>
+            <div>
+              <span class="product-card-tag" id="modalCategory">Danh Mục</span>
+              <h2 class="heading-2" id="modalTitle" style="margin: 10px 0">
+                Tên Món Ăn
+              </h2>
+              <p
+                class="body-text"
+                id="modalDescription"
+                style="color: var(--color-medium-gray); margin-bottom: 20px"
+              >
+                Mô tả chi tiết sản phẩm ăn vặt siêu ngon...
+              </p>
             </div>
-
-            <div class="modal-interactive-content">
-              <div class="modal-price-row">
-                <span class="original-price" id="modalOriginalPrice">0đ</span>
-                <span class="sale-price" id="modalSalePrice">0đ</span>
+            <div>
+              <div class="modal-price-row" style="margin-bottom: 20px">
+                <span class="old-price-cross" id="modalOldPrice">0đ</span>
+                <span
+                  class="current-price-bold"
+                  id="modalCurrentPrice"
+                  style="font-size: 24px"
+                  >0đ</span
+                >
               </div>
               <div class="modal-action-row">
-                <button class="btn-primary" id="modalAddToCartBtn">
-                  THÊM VÀO GIỎ HÀNG
+                <button
+                  class="btn-primary-cart"
+                  id="modalAddToCartBtn"
+                  style="flex: 1; height: 45px"
+                >
+                  THÊM VÀO GIỎ
                 </button>
-                <button class="btn-secondary-buy" id="modalBuyNowBtn">
+                <button
+                  class="btn-secondary-buy"
+                  id="modalBuyNowBtn"
+                  style="flex: 1; height: 45px"
+                >
                   MUA NGAY
                 </button>
               </div>
